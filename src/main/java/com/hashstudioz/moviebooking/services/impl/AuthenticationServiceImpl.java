@@ -11,6 +11,7 @@ import com.hashstudioz.moviebooking.dto.RefreshTokenRequest;
 import com.hashstudioz.moviebooking.dto.SignInRequest;
 import com.hashstudioz.moviebooking.dto.SignUpRequest;
 import com.hashstudioz.moviebooking.entities.User;
+import com.hashstudioz.moviebooking.entities.classenum.Role;
 import com.hashstudioz.moviebooking.entities.classenum.Status;
 import com.hashstudioz.moviebooking.repository.UserRepo;
 import com.hashstudioz.moviebooking.services.AuthenticationService;
@@ -36,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			User user = new User();
 			user.setName(signUpRequest.getName());
 			user.setEmail(signUpRequest.getEmail());
-			user.setRole(signUpRequest.getRole());
+			user.setRole(Role.USER);
 			user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
 			user.setCreatedDate(java.time.LocalDate.now().toString());
 			user.setStatus(Status.ACTIVE);
@@ -54,17 +55,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public JwtAuthenticationResponse signIn(SignInRequest signInRequest) {
 		
 		User user = userRepo.findByEmail(signInRequest.getEmail())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid Eail or Password !!"));
-		System.out.println(user);
+				.orElseThrow(() -> new IllegalArgumentException("Invalid Email or Password !!"));
+		
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
-//				var user = userRepo.findByEmail(signInRequest.getEmail())
-//						.ovarrElseThrow(() -> new IllegalArgumentException("Invalid Eail or Password !!"));
-			    JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-				if(Status.ACTIVE.equals(user.getStatus())) {
+
+			   JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+				
+			   if(Status.ACTIVE.equals(user.getStatus())) {
 					var jwt = jwtService.generateToken(user);
 					var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-					
+					System.out.println(jwt);
 					jwtAuthenticationResponse.setToken(jwt);
 					jwtAuthenticationResponse.setRefreshToken(refreshToken);
 					return jwtAuthenticationResponse;	

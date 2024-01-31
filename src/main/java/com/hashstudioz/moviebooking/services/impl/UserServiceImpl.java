@@ -14,19 +14,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 	
-	private final UserRepo userRepo;
-	
-	
-	public UserServiceImpl(UserRepo userRepo) {
-		super();
-		this.userRepo = userRepo;
-	}
+	private final UserRepo userRepo;	
 	
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsService() {
 			@Override
-			public UserDetails loadUserByUsername(String username){
-				return userRepo.findByEmail(username)
+			public UserDetails loadUserByUsername(String email){
+				return userRepo.findByEmail(email)
 						.orElseThrow(()-> new UsernameNotFoundException("User Not Found"));
 			}	
 		};

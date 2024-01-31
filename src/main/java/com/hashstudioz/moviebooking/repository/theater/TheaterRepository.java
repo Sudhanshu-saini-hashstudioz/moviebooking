@@ -1,8 +1,11 @@
 package com.hashstudioz.moviebooking.repository.theater;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.hashstudioz.moviebooking.entities.Theater;
@@ -10,7 +13,8 @@ import com.hashstudioz.moviebooking.entities.Theater;
 @Repository
 public interface TheaterRepository extends JpaRepository<Theater , Long> {
 	
-	Page<Theater> findByTheaterName(@Param("theaterName") String name, Pageable pageable);
+	@Query("SELECT t FROM Theater t WHERE LOWER(t.theaterName) LIKE LOWER(CONCAT('%', :name, '%'))")
+	List<Theater> findByTheaterName( String name);
 
 	Page<Theater> findByCity(@Param("city") String name, Pageable pageable);
 

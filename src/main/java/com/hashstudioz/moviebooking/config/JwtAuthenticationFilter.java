@@ -9,10 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.hashstudioz.moviebooking.services.JwtService;
 import com.hashstudioz.moviebooking.services.UserService;
-
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,19 +25,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtService jwtService;
 	private final UserService userService;
 
-	public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
-		super();
-		this.jwtService = jwtService;
-		this.userService = userService;
-	}
-
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		final String userEmail;
+		String userEmail;
 
 		if (StringUtils.isEmpty(authHeader)
 				|| !org.apache.commons.lang3.StringUtils.startsWith(authHeader, "Bearer ")) {
@@ -51,7 +43,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		userEmail = jwtService.extractUserName(jwt);
 		
 		if (StringUtils.isNotEmpty(userEmail) && SecurityContextHolder.getContext().getAuthentication() == null) {
+			
 			UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
+			
+			System.out.println("In Jwt Authenticationzfilter :"+userDetails);
+			
 			if (jwtService.isTokenValid(jwt, userDetails)) {
 				SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 				UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, null,

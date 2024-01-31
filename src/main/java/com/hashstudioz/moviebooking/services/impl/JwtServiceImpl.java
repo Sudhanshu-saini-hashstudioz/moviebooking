@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +20,6 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtServiceImpl  implements JwtService{
 	
-	@Value("${test.property.name}")
-	private String name;
 	 private String secret = "afafafafafafaafafsfsfafsfsfafsfsasfasafsafsSHDHJSJJDHFHSJSSKDKNVNVHFHFDHSJDJSJJDJCNSJJNFNXLKMKDFNJNXNVFVEVNJFNVHERNJHFNDJSJKccaddaasddfffssdsdjsvjvfjjfvdfj";
 	
 	public String generateToken(UserDetails userDetails) {
@@ -49,7 +46,6 @@ public class JwtServiceImpl  implements JwtService{
 	private Claims extractAllClaims(String token) {
 		return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 	}
-	
 	
 	public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUserName(token);
