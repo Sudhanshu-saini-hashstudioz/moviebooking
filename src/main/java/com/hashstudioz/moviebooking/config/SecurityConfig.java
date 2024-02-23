@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @OpenAPIDefinition
-//@EnableWebMvc
 public class SecurityConfig {
 	
 	//public static final String[] USER_URLS= {};
@@ -36,8 +35,7 @@ public class SecurityConfig {
 			"/v3/api-docs/**", "/v2/api-docs/**",
 			"/swagger-resources/**",
 			"/swagger-ui/**",
-			"/webjars/**",
-			"/api/v1/auth/**"
+			"/webjars/**"
 	};
 	
 	@Autowired
@@ -48,24 +46,23 @@ public class SecurityConfig {
 
     @Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-				.cors().disable().csrf(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(request -> request.requestMatchers("/api/v1/web/**").permitAll()
-//						.requestMatchers("/test2","/home").permitAll()
-						.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-						.requestMatchers("/**", "/WEB-INF/**", "/favicon.ico", "/*.png", "/*.gif", "/*.svg", "/*.jpg",
-								"/*.html",
-								"/*.css", "/*.js", "/*.xlsx", "/*.ttf", "/*.jsp" , "/static/**").permitAll()
-						.requestMatchers(PUBLIC_URLS).permitAll()
-						.requestMatchers("/movie/**").permitAll()
-						.requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())
-						.requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name()
-								).anyRequest().authenticated()
+        http
+                .cors(cors -> cors.disable()).csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> request.requestMatchers("/api/v1/web/**").permitAll()
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .requestMatchers("/WEB-INF/**", "/favicon.ico", "/*.png", "/*.gif", "/*.svg", "/*.jpg",
+                                        "/*.html",
+                                        "/*.css", "/*.js", "/*.xlsx", "/*.ttf", "/*.jsp", "/static/**").permitAll()
+                                .requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers("/movie/**").permitAll()
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                .requestMatchers("/api/v1/admin/**").hasAnyAuthority(Role.ADMIN.name())
+                                .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name()
+                        ).anyRequest().authenticated()
 
-				).sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authenticationProvider(authenticationProvider())
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                ).sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 
