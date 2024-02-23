@@ -3,8 +3,8 @@ package com.hashstudioz.moviebooking.dto;
 import lombok.Data;
 
 @Data
-public class CreateTheaterRequest {
+public class CreateTheatreRequest {
 	
-	private String theaterName;
+	private String theatreName;
     private String city;
 }

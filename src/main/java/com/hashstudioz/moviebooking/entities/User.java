@@ -18,7 +18,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "user_table")
-public class User implements UserDetails , Serializable {
+public class User implements UserDetails, Serializable {
 
 	/**
 	 * 
@@ -35,6 +35,7 @@ public class User implements UserDetails , Serializable {
 	private String createdDate;
 	private String modifiedDate;
 	private Status status;
+	private boolean deleted = Boolean.FALSE;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

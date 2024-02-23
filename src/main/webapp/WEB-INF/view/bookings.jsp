@@ -33,12 +33,11 @@
           contentType: 'application/json; charset=utf-8',
           async: false,
           success: function (response) {
-            // localStorage.setItem("invoice", JSON.stringify(response));
             var invoices = JSON.parse(JSON.stringify(response));
             populateInvoiceTable(invoices);
           },
           error: function (e) {
-            console.log("Something Went Wrong:", e);
+            console.log("Acess Denied", e);
             window.location.replace("http://localhost:1212/movie/adminhome");
           }
         });
@@ -51,34 +50,125 @@
         tableBody.empty();
 
         $.each(invoices, function (index, invoice) {
-          var row = $('<tr>');
-          row.append($('<td>').text(invoice.invoiceId));
-          row.append($('<td>').text(invoice.userId));
-          row.append($('<td>').text(invoice.show.upcomingShows));
-          row.append($('<td>').text(invoice.totalTickets));
-          row.append($('<td>').text(invoice.totalPrice));
-          row.append($('<td>').text(invoice.booked_date));
-          row.append($('<td>').text(invoice.bookingSeat));
-          var actionColumn = $("<td>");
-          actionColumn.append('<a onclick="return confirmDelete(\'' + invoice.invoiceId + '\' , \'' + invoice.show.upcomingShows + '\', \'' + invoice.totalPrice + '\')"> <button type="button" class="btn">Delete</button></a>');
-          row.append(actionColumn);
-          tableBody.append(row);
+          if (invoice.payment_status === "paid") {
+            var row = $('<tr>');
+            row.append($('<th>').text(invoice.invoiceId));
+            row.append($('<td>').text(invoice.userId));
+            row.append($('<td>').text(invoice.show.upcomingShows));
+            row.append($('<td>').text(invoice.totalTickets));
+            row.append($('<td>').text(invoice.totalPrice));
+            row.append($('<td>').text(invoice.booked_date));
+            row.append($('<td>').text(invoice.seatNumber));
+            var actionColumn = $("<td>");
+            actionColumn.append('<a onclick="return confirmDelete(\'' + invoice.userId + '\')"> <button type="button" class="btn">Delete</button></a>');
+            row.append(actionColumn);
+            tableBody.append(row);
+
+          }
+
         });
       }
 
+      function searchInvoiceByEmail(email) {
+        var token = localStorage.getItem("token");
+        var headers = {
+          "Authorization": "Bearer " + token,
+        };
 
+        var email = $(".search-input").val();
+        if (email != "") {
+          $.ajax({
+            url: "http://localhost:1212/api/v1/admin/getallinvoicebyemail",
+            type: "GET",
+            headers: headers,
+            data: {
+              email: email
+            },
+            contentType: 'application/json; charset=utf-8',
+            async: false,
+            success: function (response) {
+              var invoices = JSON.parse(JSON.stringify(response));
+              if (invoices.length > 0) {
+                populateInvoiceTable(invoices);
+              }
 
+            },
+            error: function (e) {
+              console.log("Something Went Wrong:", e);
+              window.location.replace("http://localhost:1212/movie/home");
+            }
+          });
 
+        }
 
-
-
-      function showConfirmationDialog() {
-        var confirmationMessage = "Are you sure you want to delete data ?"
-        return confirm(confirmationMessage);
       }
 
-      function confirmDelete() {
-        return confirm("Are you sure you want to Delete the data?");
+
+      function searchUserInvoices() {
+
+        var email = $(".email-field").val();
+        var token = localStorage.getItem("token");
+        var headers = {
+          "Authorization": "Bearer " + token,
+        };
+
+        $.ajax({
+          url: "http://localhost:1212/api/v1/admin/getUserInvoices",
+          type: "GET",
+          headers: headers,
+          contentType: 'application/json; charset=utf-8',
+          async: false,
+          data: {
+            email: email
+          },
+          success: function (response) {
+            var invoices = JSON.parse(JSON.stringify(response));
+            if (invoices.length > 0) {
+              populateInvoiceTable(invoices);
+            }
+
+          },
+          error: function (e) {
+            console.log("Something Went Wrong:", e);
+            window.location.replace("http://localhost:1212/movie/adminhome");
+          }
+        });
+
+
+      }
+
+
+      function confirmDelete(userId) {
+
+
+        var token = localStorage.getItem("token");
+        var headers = {
+          "Authorization": "Bearer " + token,
+        };
+
+        $.ajax({
+          url: "http://localhost:1212/api/v1/admin/deleteInvoiceById",
+          type: "DELETE",
+          headers: headers,
+          contentType: 'application/json; charset=utf-8',
+          async: false,
+          data: {
+            userId: userId
+          },
+          success: function (response) {
+            var invoices = JSON.parse(JSON.stringify(response));
+            if (invoices.length > 0) {
+              populateInvoiceTable(invoices);
+            }
+          },
+          error: function (e) {
+            console.log("Something Went Wrong:", e);
+            window.location.replace("http://localhost:1212/movie/adminhome");
+          }
+        });
+
+
+
       }
 
 
@@ -86,7 +176,7 @@
         toggleLoginLogout();
       });
 
-      var isAuthenticated;
+      var isAuthenticated = true;
 
       function toggleLoginLogout() {
         var token = localStorage.getItem('token');
@@ -104,6 +194,7 @@
       function performLogout() {
         if (isAuthenticated) {
           localStorage.clear();
+          sessionStorage.clear();
           document.getElementById("logoutButton").style.display = "none";
           window.location.href = "home";
 
@@ -144,7 +235,7 @@
         height: 100%;
         background-color: whitesmoke;
         overflow-x: hidden;
-        transition: 0.5s;
+        transition: 0.2s;
         z-index: 2;
       }
 
@@ -174,14 +265,13 @@
         font-size: 20px;
         color: #0a0a0a;
         display: block;
-        transition: 0.3s;
+        transition: 0.2s;
         border-color: grey;
         border-block: inherit;
       }
 
       .overlay a:hover,
       .hamburger:hover,
-      .btn:hover,
       .overlay a:focus {
         color: #f1f1f1;
         background-color: rgb(235, 84, 84);
@@ -200,6 +290,7 @@
         }
       }
 
+
       .table {
         align-items: center;
         overflow-y: auto;
@@ -207,10 +298,50 @@
       }
 
       table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      tbody {
+        overflow-y: auto;
+      }
+
+      td,
+      th {
+        width: auto;
+        text-align: center;
+        padding: 8px;
+      }
+
+      tr,
+      th {
+        margin: 6px;
+      }
+
+      tr:nth-child(even) {
+        background-color: rgb(221, 221, 221);
+      }
+
+      /* .table {
+        align-items: center;
+        overflow: auto;
+        display: block;
+        height: 400px;
+      }
+
+      table {
         border-collapse: collapse;
         width: 100%;
 
-        th,
+        /* tbody {
+          width: 100%;
+          height: 600px;
+          display: block;
+          overflow: auto;
+        } */
+
+      /* th,
         td {
           padding: 8px 16px;
         }
@@ -219,15 +350,27 @@
           background: #eee;
         }
 
+      } */
+
+      .search {
+        margin-left: 64%;
+        margin-bottom: 5px;
+        display: inline-flex;
+        justify-content: center;
+        flex-direction: row;
       }
 
       .btn {
-          margin-left: 5px;
-          margin-right: 5px;
-          color: black;
-          background-color: rgb(223, 223, 223);
-          border-radius: 10px;
-        }
+        margin-left: 5px;
+        margin-right: 5px;
+        color: white;
+        background-color: rgb(235, 84, 84);
+        border-radius: 10px;
+      }
+
+      .btn:hover {
+        color: white;
+      }
     </style>
   </head>
 
@@ -240,8 +383,8 @@
 
       <!-- Search Bar -->
       <form class="form-inline my-2 my-lg-0 mx-auto">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn searchbutton  my-2 my-sm-0" type="button">Search</button>
+        <input class="form-control mr-sm-2 search-input" type="search" placeholder="User" aria-label="Search">
+        <button class="btn searchbutton  my-2 my-sm-0" type="button" onclick="searchInvoiceByEmail()">Search</button>
       </form>
 
       <div id="myNav" class="overlay left">
@@ -251,10 +394,10 @@
         <div class="overlay-content">
           <a type="button" href="#" onclick="handleLinkClick(event)">About</a>
           <a type="button" href="users" onclick="handleLinkClick(event)">Users</a>
-          <a type="button" href="theaters" onclick="handleLinkClick(event)">Theater</a>
+          <a type="button" href="theatres" onclick="handleLinkClick(event)">Theatres</a>
           <a type="button" href="shows" onclick="handleLinkClick(event)">Shows</a>
           <a type="button" href="bookings" onclick="handleLinkClick(event)">Bookings</a>
-          <a type="button" id="logoutButton" onclick="performLogout()">Logout</a>
+          <a type="button" href="#" id="logoutButton" onclick="performLogout()">Logout</a>
         </div>
       </div>
     </nav>
@@ -267,36 +410,33 @@
 
           <h3 class="text-center mb-3"> Booked Tickets</h3>
 
-          <form>
+          <button onclick="goBack()" class="btn backbtn">Back</button>
+          <div class="search">
+            <input type="test" class="form-control email-field" id="email" name="email" placeholder="User Email">
+            <button class="btn searchbutton  my-2 my-sm-0" type="button" onclick="searchUserInvoices()">Search</button>
+          </div>
 
-            <table>
-              <thead class="thead-dark">
-                <tr>
-                  <th scope="col">ID</th>
-                  <th scope="col">User</th>
-                  <th scope="col">Show</th>
-                  <th scope="col">Tickets</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Booking Date</th>
-                  <th scope="col">Booking Seat</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody id="tableBody">
-              </tbody>
+          <table>
+            <thead class="thead-dark" style="color: white; background-color: #000000;">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">User</th>
+                <th scope="col">Show</th>
+                <th scope="col">Tickets</th>
+                <th scope="col">Price</th>
+                <th scope="col">Booking Date</th>
+                <th scope="col">Booking Seat</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
 
-            </table>
-
-            <button href="adminhome" class="btn  center-button" type="submit">Back Home</button>
-
-          </form>
+          </table>
 
         </div>
 
-
       </div>
-
-
     </div>
 
   </body>

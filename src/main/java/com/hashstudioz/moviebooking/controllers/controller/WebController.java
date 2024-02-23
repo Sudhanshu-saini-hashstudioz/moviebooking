@@ -2,26 +2,17 @@ package com.hashstudioz.moviebooking.controllers.controller;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.hashstudioz.moviebooking.dto.CreateInvoiceRequest;
-import com.hashstudioz.moviebooking.entities.Invoice;
-import com.hashstudioz.moviebooking.services.impl.CinemaService;
 
 @Controller
 @RequestMapping("/movie")
 public class WebController {
 
-	@Autowired
-	private CinemaService cinemaService;
-	
 	@GetMapping("/logo1.png")
 	public ResponseEntity<?> getLogo() {
 		try {
@@ -30,20 +21,18 @@ public class WebController {
 			
 		}catch(Exception e) {
 			return ResponseEntity.notFound().build();
-		}
-		
+		}	
 	}
 	
-	@GetMapping("/background1.png")
+	@GetMapping("/bg.png")
 	public ResponseEntity<?> getBackGroundImage() {
 		try {
-			Resource resource = new ClassPathResource("static/images/background1.png");
+			Resource resource = new ClassPathResource("static/images/bg1.jpg");
 			return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(resource);
 			
 		}catch(Exception e) {
 			return ResponseEntity.notFound().build();
 		}
-		
 	}
 
 	@GetMapping("/home")
@@ -65,6 +54,12 @@ public class WebController {
 	public String getMovieDetails() {
 		return "show";
 	}
+	
+	@GetMapping("/selectshow")
+	public String selectShow() {
+		return "selectshow";
+	}
+	
 	@GetMapping("/getseat")
 	public String getSeats() {
 		return "seat";
@@ -74,12 +69,11 @@ public class WebController {
 		return "payment";
 	}
 	
-	@GetMapping("/getuserbookings")
+	@GetMapping("/userbookings")
 	public String getUserBookings() {
 		return "userbookings";
 	}
 	
-
 	@GetMapping("/adminhome")
 	public String adminHome() {
 		return "adminhome";
@@ -90,14 +84,14 @@ public class WebController {
 		return "users";
 	}
 	
-	@GetMapping("/theaters")
-	public String theater() {
-		return "theaters";
+	@GetMapping("/theatres")
+	public String theatre() {
+		return "theatres";
 	}
 	
-	@GetMapping("/theaterform")
-	public String theaterForm() {
-		return "create_theater_form";
+	@GetMapping("/theatreform")
+	public String theatreForm() {
+		return "create_theatre_form";
 	}
 	
 	@GetMapping("/shows")
@@ -109,16 +103,20 @@ public class WebController {
 	public String createShowForm() {
 		return "create_show_form";
 	}
+	
+	@GetMapping("/showform")
+	public String showForm() {
+		return "form";
+	}
 
 	@GetMapping("/bookings")
 	public String getAllBookings() {
 		return "bookings";
 	}
-
-	@GetMapping("/getinvoice")
-	public Invoice getInvoice(@RequestBody CreateInvoiceRequest invoiceRequest, Authentication auth) {
-		auth.getPrincipal();
-		return cinemaService.createInvoice(invoiceRequest);
+	
+	@GetMapping("/form")
+	public String getForm() {
+		return "form";
 	}
 
 }

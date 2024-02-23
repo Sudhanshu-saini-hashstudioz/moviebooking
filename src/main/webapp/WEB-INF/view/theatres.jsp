@@ -20,49 +20,51 @@
       <script>
 
         $(document).ready(function () {
+
           var token = localStorage.getItem("token");
           var headers = {
             "Authorization": "Bearer " + token,
           };
           $.ajax({
-            url: "http://localhost:1212/api/v1/admin/gettheaters",
+            url: "http://localhost:1212/api/v1/admin/gettheatres",
             type: "GET",
             headers: headers,
             contentType: 'application/json; charset=utf-8',
             async: false,
             success: function (response) {
-              var theaters = JSON.parse(JSON.stringify(response));
+              var theatres = JSON.parse(JSON.stringify(response));
 
-              if (theaters && theaters.length > 0) {
-                populateTheatersTable(theaters);
+              if (theatres && theatres.length > 0) {
+                populateTheatresTable(theatres);
               } else {
-                alert("No data found.")
                 console.log("No data found.");
               }
 
             },
             error: function (e) {
-              alert("Access Denied");
-              console.log("Something Went Wrong:", e);
-              window.location.replace("http://localhost:1212/movie/loginpage");
+              window.location.replace("http://localhost:1212/movie/adminhome");
             }
           });
 
         });
 
 
-        function populateTheatersTable(theaters) {
+        function populateTheatresTable(theatres) {
           var tableBody = $("table tbody");
           tableBody.empty();
 
-          $.each(theaters, function (index, theater) {
+          $.each(theatres, function (index, theatre) {
             var row = $('<tr>');
-            row.append($('<td>').text(theater.theaterId));
-            row.append($('<td>').text(theater.theaterName));
-            row.append($('<td>').text(theater.city));
+            row.append($('<th>').text(theatre.theatreId));
+            row.append($('<td>').text(theatre.theatreName));
+            row.append($('<td>').text(theatre.city));
             var actionColumn = $("<td>");
-            actionColumn.append('<a onclick="return confirmDelete(\'' + theater.theaterName + '\' , \'' + theater.city + '\', \'' + theater.theaterId + '\')"> <button type="button" class="btn">Delete</button></a>');
-            actionColumn.append('<a href="#"><button type="button" class="btn">Update</button></a>');
+
+              if(theatre.deleted){
+                actionColumn.append('<button type="button" class="btn" >Not Available</button>');
+              } else{
+                actionColumn.append('<a onclick="return confirmDelete(\'' + theatre.theatreName + '\' , \'' + theatre.city + '\', \'' + theatre.theatreId + '\')"> <button type="button" class="btn">Delete</button></a>');
+              }
             row.append(actionColumn);
             tableBody.append(row);
           });
@@ -71,13 +73,13 @@
 
         function search() {
 
-          var name = $(".search-input").val();
+          var name = $("#theatreName").val();
           var token = localStorage.getItem("token");
           var headers = {
             "Authorization": "Bearer " + token,
           };
           $.ajax({
-            url: "http://localhost:1212/api/v1/admin/gettheaterbyname",
+            url: "http://localhost:1212/api/v1/admin/gettheatrebyname",
             type: "GET",
             headers: headers,
             contentType: 'application/json; charset=utf-8',
@@ -86,19 +88,50 @@
             },
             async: false,
             success: function (response) {
-              var theater = JSON.parse(JSON.stringify(response));
-              populateTheatersTable(theater);
+              var theatre = JSON.parse(JSON.stringify(response));
 
+              if(theatre.length >0){
+                populateTheatresTable(theatre);
+              }
+             
             },
             error: function (e) {
-              alert("Data Not Found");
               window.location.reload();
             }
           });
 
-
         }
 
+
+        function searchAll() {
+          var name = $(".search-input").val();
+          var token = localStorage.getItem("token");
+          var headers = {
+            "Authorization": "Bearer " + token,
+          };
+          $.ajax({
+            url: "http://localhost:1212/api/v1/admin/getalltheatre",
+            type: "GET",
+            headers: headers,
+            contentType: 'application/json; charset=utf-8',
+            data: {
+              name: name
+            },
+            async: false,
+            success: function (response) {
+              var theatre = JSON.parse(JSON.stringify(response));
+
+              if(theatre.length >0){
+                populateTheatresTable(theatre);
+              }
+
+            },
+            error: function (e) {
+              window.location.reload();
+            }
+          });
+
+        }
 
         function showConfirmationDialog() {
           var confirmationMessage = "Are you sure you want to delete data ?"
@@ -106,7 +139,7 @@
         }
 
         function confirmDelete(name, city, id) {
-          var confirmationMessage = "Are you sure you want to Delete the data?";
+          var confirmationMessage = "Are you sure you want to Delete the data? \n";
           confirmationMessage += "Name : " + name + "\n";
           confirmationMessage += "City : " + city + "\n";
           var userConfirmed = confirm(confirmationMessage);
@@ -125,7 +158,7 @@
           };
 
           $.ajax({
-            url: "http://localhost:1212/api/v1/admin/deletetheater",
+            url: "http://localhost:1212/api/v1/admin/deletetheatre",
             type: "DELETE",
             headers: headers,
             data: formData,
@@ -133,7 +166,6 @@
             processData: false,
             async: false,
             success: function (response) {
-              alert("Data Deleted Sucessfully.")
               window.location.reload();
 
             },
@@ -150,7 +182,7 @@
           toggleLoginLogout();
         });
 
-        var isAuthenticated;
+        var isAuthenticated = true;
 
         function toggleLoginLogout() {
           var token = localStorage.getItem('token');
@@ -162,12 +194,12 @@
 
           } else {
             isAuthenticated = false;
-
           }
         }
         function performLogout() {
           if (isAuthenticated) {
             localStorage.clear();
+            sessionStorage.clear();
             document.getElementById("logoutButton").style.display = "none";
             window.location.href = "home";
 
@@ -208,7 +240,7 @@
           height: 100%;
           background-color: whitesmoke;
           overflow-x: hidden;
-          transition: 0.5s;
+          transition: 0.2s;
           z-index: 2;
         }
 
@@ -238,14 +270,13 @@
           font-size: 20px;
           color: #0a0a0a;
           display: block;
-          transition: 0.3s;
+          transition: 0.2s;
           border-color: grey;
           border-block: inherit;
         }
 
         .overlay a:hover,
         .hamburger:hover,
-        .btn:hover,
         .overlay a:focus {
           color: #f1f1f1;
           background-color: rgb(235, 84, 84);
@@ -264,18 +295,18 @@
           }
         }
 
-        /* /* .btn:hover {
-          background-color: rgb(235, 84, 84);
-        } */
-
         .btn {
           margin-left: 5px;
           margin-right: 5px;
 
-          color: black;
-          background-color: rgb(223, 223, 223);
+          color: white;
+          background-color: rgb(235, 84, 84);
           border-radius: 10px;
         }
+
+        .btn:hover{
+                color: white;
+            }
 
         .search {
           margin-bottom: 5px;
@@ -292,6 +323,39 @@
         }
 
         .table {
+                    align-items: center;
+                    overflow-y: auto;
+                    height: 400px;
+                }
+
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                tbody {
+                    overflow-y: auto;
+                }
+
+                td,
+                th {
+                    width: auto;
+                  
+                    text-align: center;
+                    padding: 8px;
+                }
+
+                tr,
+                th {
+                    margin: 6px;
+                }
+
+                tr:nth-child(even) {
+                    background-color: rgb(221, 221, 221);
+                }
+
+        /* .table {
           align-items: center;
           overflow-y: auto;
           height: 400px;
@@ -308,9 +372,9 @@
 
           th {
             background: #eee;
-          }
+          } 
 
-        }
+        }*/
       </style>
     </head>
 
@@ -324,7 +388,7 @@
         <!-- Search Bar -->
         <form class="form-inline my-2 my-lg-0 mx-auto">
           <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn searchbutton  my-2 my-sm-0" type="button" onclick="search()">Theater </button>
+          <button class="btn searchbutton  my-2 my-sm-0" type="button" onclick="searchAll()">Search </button>
         </form>
 
         <div class="loginbtn" id="loginButtonContainer">
@@ -338,10 +402,10 @@
           <div class="overlay-content">
             <a type="button" href="#" onclick="handleLinkClick(event)">About</a>
             <a type="button" href="users" onclick="handleLinkClick(event)">Users</a>
-            <a type="button" href="theaters" onclick="handleLinkClick(event)">Theater</a>
+            <a type="button" href="theatres" onclick="handleLinkClick(event)">Theatres</a>
             <a type="button" href="shows" onclick="handleLinkClick(event)">Shows</a>
             <a type="button" href="bookings" onclick="handleLinkClick(event)">Bookings</a>
-            <a type="button" id="logoutButton" onclick="performLogout()">Logout</a>
+            <a type="button" href="#" id="logoutButton" onclick="performLogout()">Logout</a>
           </div>
         </div>
       </nav>
@@ -349,30 +413,24 @@
       <div class="container mt-3">
         <div class="row">
           <div class="col-md-12">
-            <h3 class="text-center mb-3 "> Theater Details </h3>
+            <h3 class="text-center mb-3 "> Theatre Details </h3>
 
             <div class="search">
               <button onclick="goBack()" type="button" class="btn backbtn">Back</button>
-              <a href="theaterform" class="btn addbtn" type="button">Add Theater</a>
+              <a href="theatreform" class="btn addbtn" type="button">Add Theatre</a>
 
               <div class="search-input-container">
-                <input type="text" class="form-control name-field search-input" id="name" name="name"
+                <input type="text" class="form-control name-field search-input" id="theatreName" name="name"
                   placeholder="Name">
                 <button class="btn searchbutton my-2 my-sm-0" type="button" onclick="search()">Search</button>
               </div>
             </div>
-
-
-
-
-
-
             <div class="col-md-12 table">
               <table>
                 <thead class="thead-dark">
                   <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Theater Name</th>
+                    <th scope="col">Theatre Name</th>
                     <th scope="col">City</th>
                     <th scope="col">Action</th>
                   </tr>

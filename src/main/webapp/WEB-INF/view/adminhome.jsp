@@ -33,14 +33,12 @@
                     contentType: 'application/json; charset=utf-8',
                     async: false,
                     success: function (response) {
-                        // localStorage.setItem("shows", JSON.stringify(response));
                         var shows = JSON.parse(JSON.stringify(response));
                         populateShowsTable(shows);
 
                     },
                     error: function (e) {
-                        alert("Access Denied");
-                        console.log("Something Went Wrong:", e);
+                        console.log("Acess Denied", e);
                         window.location.replace("http://localhost:1212/movie/loginpage");
                     }
                 });
@@ -62,7 +60,6 @@
                         populateShowsTable(shows);
                     },
                     error: function (e) {
-                        alert("Something Went Wrong:");
                         window.location.replace("http://localhost:1212/movie/loginpage");
                     }
                 });
@@ -79,10 +76,10 @@
                     row.append($("<td>").text(show.upcomingShows));
                     row.append($("<td>").text(show.genre));
                     row.append($("<td>").text(show.language));
-                    row.append($("<td>").text(show.theater.theaterName));
+                    row.append($("<td>").text(show.theatre.theatreName));
                     row.append($("<td>").text(show.screenId));
                     row.append($("<td>").text(show.runningTime));
-                    row.append($("<td>").text(show.theater.city));
+                    row.append($("<td>").text(show.theatre.city));
                     tableBody.append(row);
                 });
             }
@@ -106,7 +103,6 @@
                     },
                     async: false,
                     success: function (response) {
-                        // localStorage.setItem("shows", JSON.stringify(response));
                         var shows = JSON.parse(JSON.stringify(response));
                         populateShowsTable(shows);
 
@@ -120,57 +116,11 @@
 
             }
 
-
-            function showConfirmationDialog() {
-                var confirmationMessage = "Are you sure you want to delete data ?"
-                return confirm(confirmationMessage);
-            }
-
-            function confirmDelete(name, time, id) {
-                var confirmation = "Are you sure you want to Delete the data?";
-                confirmationMessage += "Name : " + name + "\n";
-                confirmationMessage += "TIme : " + time + "\n";
-                var confirmed = confirm(confirmation);
-                if (confirmed) {
-                    return deleteData(id);
-                } else {
-                    return false;
-                }
-            }
-
-            function deleteData(id) {
-
-                var formData = new FormData();
-                formData.append("id", id);
-                var headers = {
-                    "Authorization": "Bearer " + localStorage.getItem("token"),
-                };
-
-                $.ajax({
-                    url: "http://localhost:1212/api/v1/admin/deleteshow",
-                    type: "DELETE",
-                    headers: headers,
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    async: false,
-                    success: function (response) {
-                        window.location.reload();
-
-                    },
-                    error: function (e) {
-                        alert("Something Went Wrong:");
-                        console.log("Something Went Wrong:", e);
-                        window.location.reload();
-                    }
-                });
-            }
-
             document.addEventListener('DOMContentLoaded', function () {
                 toggleLoginLogout();
             });
 
-            var isAuthenticated;
+            var isAuthenticated=true;
 
             function toggleLoginLogout() {
                 var token = localStorage.getItem('token');
@@ -189,8 +139,9 @@
             function performLogout() {
                 if (isAuthenticated) {
                     localStorage.clear();
-                    document.getElementById("logoutButton").style.display = "none";
+                    sessionStorage.clear();
                     window.location.href = "home";
+                    document.getElementById("logout").style.display = "none";
 
                 } else {
                     window.location.href = "loginpage";
@@ -233,7 +184,7 @@
                 height: 100%;
                 background-color: whitesmoke;
                 overflow-x: hidden;
-                transition: 0.5s;
+                transition: 0.2s;
                 z-index: 2;
             }
 
@@ -263,14 +214,14 @@
                 font-size: 20px;
                 color: #0a0a0a;
                 display: block;
-                transition: 0.3s;
+                transition: 0.2s;
                 border-color: grey;
                 border-block: inherit;
+                cursor: pointer;
             }
 
             .overlay a:hover,
             .hamburger:hover,
-            .btn:hover,
             .overlay a:focus {
                 color: #f1f1f1;
                 background-color: rgb(235, 84, 84);
@@ -290,8 +241,8 @@
             }
 
             .btn {
-                color: black;
-                background-color: #dfdfdf;
+                color: white;
+                background-color: rgb(235, 84, 84);
                 border-radius: 10px;
             }
 
@@ -314,6 +265,39 @@
             }
 
             .table {
+                    align-items: center;
+                    overflow-y: auto;
+                    height: 400px;
+                }
+
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                tbody {
+                    overflow-y: auto;
+                }
+
+                td,
+                th {
+                    width: auto;
+                 
+                    text-align: center;
+                    padding: 8px;
+                }
+
+                tr,
+                th {
+                    margin: 6px;
+                }
+
+                tr:nth-child(even) {
+                    background-color: rgb(221, 221, 221);
+                }
+
+            /* .table {
                 align-items: center;
                 overflow-y: auto;
                 height: 400px;
@@ -331,7 +315,7 @@
 
             th {
                 background: #eee;
-            }
+            } */
         </style>
     </head>
 
@@ -344,7 +328,7 @@
 
             <!-- Search Bar -->
             <form class="form-inline my-2 my-lg-0 mx-auto">
-                <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-2 search-input" type="search" placeholder="Movie Name" aria-label="Search">
                 <button class="btn searchbutton  my-2 my-sm-0" type="button" onclick="searchByName()">Search</button>
             </form>
 
@@ -359,10 +343,10 @@
                 <div class="overlay-content">
                     <a type="button" href="#" >About</a>
                     <a type="button" href="users" >Users</a>
-                    <a type="button" href="theaters" >Theater</a>
+                    <a type="button" href="theatres" >Theatres</a>
                     <a type="button" href="shows">Shows</a>
                     <a type="button" href="bookings" >Bookings</a>
-                    <a type="button" id="logoutButton" onclick="performLogout()">Logout</a>
+                    <a href="#" id="logout" onclick="performLogout()">Logout</a>
                 </div>
             </div>
         </nav>
@@ -388,7 +372,7 @@
                                     <th scope="col">Title</th>
                                     <th scope="col">Genre</th>
                                     <th scope="col">Language</th>
-                                    <th scope="col">Theater Name</th>
+                                    <th scope="col">Theatre Name</th>
                                     <th scope="col">Screen</th>
                                     <th scope="col">Time</th>
                                     <th scope="col">City</th>

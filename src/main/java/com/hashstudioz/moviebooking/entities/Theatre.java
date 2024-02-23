@@ -14,10 +14,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "theater_table")
+@Table(name = "theatre_table")
 @EntityListeners(AuditingEntityListener.class)
 @Transactional
-public class Theater implements Serializable {
+public class Theatre implements Serializable {
 
 	/**
 	 * 
@@ -26,7 +26,8 @@ public class Theater implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private long theaterId;
-	private String theaterName;
+	private long theatreId;
+	private boolean deleted = Boolean.FALSE;
+	private String theatreName;
     private String city;
 }

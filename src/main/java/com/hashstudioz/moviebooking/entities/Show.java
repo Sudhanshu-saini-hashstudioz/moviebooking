@@ -2,12 +2,8 @@ package com.hashstudioz.moviebooking.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hashstudioz.moviebooking.entities.classenum.TicketClass;
 import jakarta.persistence.CascadeType;
@@ -52,16 +48,19 @@ public class Show implements Serializable {
 	private double classic = TicketClass.CLASSIC.getPrice();
 	private double executive = TicketClass.EXECUTIVE.getPrice();
 	private double lounge = TicketClass.LOUNGE.getPrice();
+	private boolean deleted = Boolean.FALSE;
 
 	@ManyToOne
-	@JoinColumn(name = "theater_id")
-	private Theater theater;
-	
+	@JoinColumn(name = "theatre_id")
+	private Theatre theatre;
+
 	@JsonManagedReference
 	@OneToMany(mappedBy = "show", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileEntity> files = new ArrayList<>();
+	private List<FileEntity> files = new ArrayList<>();
 
 	@ElementCollection
 	private List<Integer> bookedSeat = new ArrayList<>();
-
+	
+	@ElementCollection
+	private List<Integer> pendingSeats = new ArrayList<>();
 }

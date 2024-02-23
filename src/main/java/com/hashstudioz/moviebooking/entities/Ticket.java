@@ -9,7 +9,7 @@ import lombok.Data;
 public class Ticket {
 	private String upcomingShow;
 	private String showTime;
-	private Theater theater;
+	private Theatre theatre;
 	private int screen;
 	private List<Integer> seatNumbers;
 	

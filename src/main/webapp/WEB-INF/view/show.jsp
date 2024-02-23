@@ -13,8 +13,7 @@
 
         <!-- Include Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -23,10 +22,11 @@
         <style>
             body {
                 font-family: 'Lato', sans-serif;
+               
             }
 
             .navbar {
-                background-color: whitesmoke;
+                background-color:oldlace;
             }
 
             .overlay {
@@ -35,9 +35,10 @@
                 right: -50%;
                 width: 0%;
                 height: 100%;
-                background-color: whitesmoke;
+                background-color: oldlace;
                 overflow-x: hidden;
-                transition: 0.5s;
+                transition: 0.2s;
+                z-index: 4;
 
             }
 
@@ -65,20 +66,20 @@
                 padding: 8px;
                 text-decoration: none;
                 font-size: 20px;
-                color: #0a0a0a;
+                color: maroon;
                 display: block;
-                transition: 0.3s;
+                transition: 0.1s;
                 border-color: grey;
                 border-block: inherit;
             }
 
             .overlay a:hover,
-            .hamburger:hover,
-            .btn:hover,
-            .overlay a:focus {
-                color: #f1f1f1;
-                background-color: rgb(235, 84, 84);
+            .hamburger:hover{
+                color:darksalmon;
+                background-color: lavender;
                 border-radius: 10px;
+                transition: transform 0.3s ease-out;
+                transform: scale(1.15);
             }
 
             @media screen and (max-height: 450px) {
@@ -95,10 +96,40 @@
 
             .btn,
             #btn {
-                color: black;
-                background-color: #dfdfdf;
+                /* color: white; */
+                /* background-color: rgb(235, 84, 84); */
+
+                border-radius: 15px;
+                background: linear-gradient(145deg, #ffffff, #e3dede);
+                box-shadow: 7px 7px 8px #656363,
+                    -7px -7px 8px #ffffff;
+
+                background-color:lavender;
+                box-shadow: 5px;
+                color: maroon;
                 border-radius: 10px;
                 cursor: pointer;
+
+            }
+
+            .btn:hover{
+                color: darksalmon;
+            }
+
+            p {
+                color: maroon;
+            }
+            .ticketbtn {
+                bottom: 5px;
+                align-items: center;
+                border-radius: 10px;
+                cursor: pointer;
+                padding: 10px;
+                font-weight: bold;
+                color: maroon;
+                background-color:lavender;
+                border-color: lavender;
+                position: absolute;
             }
 
 
@@ -133,19 +164,31 @@
                 justify-content: left;
             }
 
+            #othermovies{
+                display: flex;
+                flex-wrap: nowrap;
+                justify-content: left;
+            }
+
+
+            #showcard{
+                margin-top: 15px;
+                margin-left: 80px ;
+            }
+
             .show-card {
-                /* background-image:; */
-                /* background-image: linear-gradient(whitesmoke , rgb(190, 181, 181)); */
-                background-color: white;
+                background-color: oldlace;
+                /* color: white; */
                 border-radius: 15px;
                 width: 100%;
-                height: 300px;
-                margin-top: 5px;
-                padding-top: 20px;
-                padding-bottom: 20px;
-                padding-left: 40px;
+                height: 263px;
+                margin-top: 20px;
+                margin-bottom: 10PX;
+                margin-left: 80px;
+                margin-right:80px ;
+                padding-top: 5px;
+                padding-left: 5px;
                 border: 1px solid #ccc;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
                 text-align: center;
                 display: inline-flex;
                 justify-content: left;
@@ -160,35 +203,45 @@
             }
 
             .details {
+                min-width: max-content;
                 position: relative;
-                align-items: left;
-                justify-items: left;
-                margin-top: 20px;
+                flex-direction: column;
+                display: flex;
+                align-items: flex-start;
                 padding-left: 20px;
             }
 
-            .ticketbtn {
-                border-radius: 10px;
-                background-color: grey;
-                align-items: baseline;
-            }
-
-            /* .search {
-                margin-left: 62%;
-                margin-bottom: 5px;
-                display: inline-flex;
-                justify-content: center;
-                flex-direction: row;
-            } */
-
             .show-card img,
             showcard img {
-                margin-top: 2px;
+                /* aspect-ratio: 1/1;
+                object-fit: cover;
+                padding: 2px; */
+                border-radius:10px ;
                 width: fit-content;
                 justify-content: baseline;
                 height: 250px;
                 object-fit: cover;
 
+            }
+
+            .about-show {
+                position: relative;
+                flex-direction: column;
+                display: flex;
+                align-items: flex-start;
+                padding-left: 20px;
+                padding-right: 20px;
+                font-weight: 400;
+                margin-left: 40px;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+            p{
+                text-align: left;
+            }
+
+            .head {
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-weight: bold;
             }
 
             #container {
@@ -199,15 +252,45 @@
                 justify-content: left;
             }
 
-            .showcards {
-                background-color: whitesmoke;
-                border-radius: 15px;
-                width: calc(20% - 15px);
-                margin: 10px;
+            .body-show-card {
+                background-color: oldlace;
+                /* background-color: white; */
+                border-radius: 10px;
+                width: 225px;
+                height: 380px;
+                margin: 15px;
                 border: 1px solid #ccc;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
                 text-align: center;
+                cursor: pointer;
+                transition: transform 0.3s ease-out;
             }
+            .body-show-card img{
+                border-radius: 10px;
+            }
+            .body-show-card:hover {
+                transform: scale(1.07);
+                /* Scale the element on hover */
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                z-index: 3;
+
+            }
+
+            i {
+                margin: 5px;
+                cursor: pointer;
+            }
+
+            i:hover {
+                transition: transform 0.3s ease-out;
+                transform: scale(1.70);
+                /* Scale the element on hover */
+                box-shadow: 0 0 10px rgb(221, 221, 221, 0.5);
+                z-index: 3;
+
+            }
+
+
         </style>
 
         </style>
@@ -245,6 +328,7 @@
                 showContainer.innerHTML = "";
                 var card = createShowCard(show);
                 showContainer.appendChild(card);
+                populateBody();
             }
 
             function createShowCard(show) {
@@ -271,10 +355,13 @@
 
                 imageElement.alt = "Show Image";
 
-                var titleElement = document.createElement("h4");
+                var titleElement = document.createElement("h2");
+                titleElement.className = "head";
                 titleElement.innerText = show.upcomingShows;
 
-                var ratingElement = document.createElement("h6");
+                sessionStorage.setItem("showName" ,show.upcomingShows);
+
+                var ratingElement = document.createElement("h5");
                 ratingElement.innerText = " " + show.rating + "/10";
 
                 var ratingIcon = document.createElement("i");
@@ -285,17 +372,14 @@
                 ratingContainer.appendChild(document.createTextNode(" "));
                 ratingContainer.appendChild(ratingElement);
 
-                var languageElement = document.createElement("h6");
+                var languageElement = document.createElement("h5");
                 languageElement.innerText = show.language;
 
-                var genreElement = document.createElement("h6");
+                var genreElement = document.createElement("h5");
                 genreElement.innerText = show.genre;
 
-                var castElement = document.createElement("h6");
-                castElement.innerText = show.cast;
-
                 var bookTicketElement = document.createElement("button");
-                bookTicketElement.className = "btn ticketbtn"
+                bookTicketElement.className = "ticketbtn"
                 bookTicketElement.setAttribute("onclick", "seat()");
                 bookTicketElement.innerHTML = "Book Tickets"
                 card1.appendChild(imageElement);
@@ -303,12 +387,33 @@
                 card2.appendChild(ratingContainer);
                 card2.appendChild(languageElement);
                 card2.appendChild(genreElement);
-                card2.appendChild(castElement);
                 card2.appendChild(bookTicketElement);
+
+
+                //extra 
+                var aboutCard = document.createElement("div");
+                aboutCard.className = "about-show";
+
+                var aboutHead = document.createElement("h5");
+                aboutHead.innerText = "About The Movie";
+                aboutHead.className = "head";
+                var aboutDiv = document.createElement("p");
+                aboutDiv.innerText = show.description;
+
+                var castHead = document.createElement("h5");
+                castHead.innerText = "Cast";
+                castHead.className = "head";
+                var castDiv = document.createElement("p");
+                castDiv.innerText = show.cast;
+                aboutCard.appendChild(aboutHead);
+                aboutCard.appendChild(aboutDiv);
+                aboutCard.appendChild(castHead);
+                aboutCard.appendChild(castDiv);
 
                 card.appendChild(card1);
                 card.appendChild(card2);
-                
+                card.appendChild(aboutCard);
+
                 return card;
             }
 
@@ -325,19 +430,109 @@
 
 
             function seat() {
-                window.location.href = "http://localhost:1212/movie/getseat";
-                // var numberOfTickets = prompt("Enter the number of tickets:");
-
-                // if (numberOfTickets !== null && !isNaN(numberOfTickets) && numberOfTickets > 0) {
-                //     localStorage.setItem("numberOfTickets", numberOfTickets);
-                //     window.location.href = "http://localhost:1212/movie/getseat";
-                // } else {
-                //     alert("Invalid input. Please enter a valid number of tickets.");
-                // }
+                window.location.href = "http://localhost:1212/movie/selectshow";
             }
 
 
+            function searchByName() {
+                var name = $("#search-input").val();
+                if (name != "") {
+                    $.ajax({
+                        url: "http://localhost:1212/api/v1/auth/getshowsbynameandcity",
+                        type: "GET",
+                        contentType: 'application/json; charset=utf-8',
+                        data: {
+                            name: name
+                        },
+                        async: false,
+                        success: function (response) {
+                            var shows = JSON.parse(JSON.stringify(response));
+                            if (shows.length == 0) {
+                                alert("No Show Found");
+                            } else {
+                                populateBodyCard(shows);
+                            }
 
+                        },
+                        error: function (e) {
+                            alert("Something Went Wrong:");
+                            window.location.replace("http://localhost:1212/movie/home");
+                        }
+                    });
+                } 
+            }
+
+            function populateBody(){
+
+                $.ajax({
+                    url: "http://localhost:1212/api/v1/auth/getshowslist", 
+                    type: "GET",
+                    contentType: 'application/json; charset=utf-8',
+                    async: false,
+                    success: function (response) {
+                        var shows = JSON.parse(JSON.stringify(response));
+                        console.log(shows);
+                        populateBodyCard(shows);
+                    },
+                    error: function (e) {
+                        window.location.replace("http://localhost:1212/movie/home");
+                    }
+                });
+            }
+
+            function populateBodyCard(shows){
+
+                var showContainer = document.getElementById("othermovies");
+                showContainer.innerHTML = "";
+
+                shows.forEach(function (show) {
+                    var card = createBodyShowCard(show);
+                    showContainer.appendChild(card);
+                });
+            }
+
+            function createBodyShowCard(show) {
+                var card = document.createElement("div");
+                card.className = "body-show-card";
+
+                var imageElement = document.createElement("img");
+
+                // Use the first photo if available
+                if (show.files && show.files.length > 0) {
+                    var base64Image = show.files[0].imagedata;
+                    imageElement.src = "data:image/jpeg;base64," + base64Image;
+                } else {
+                    imageElement.src = "path/to/default/image.jpg";
+                }
+
+                imageElement.alt = "Show Image";
+
+                var titleElement = document.createElement("b");
+                titleElement.className = "title";
+                titleElement.innerText = show.upcomingShows;
+
+                var genreElement = document.createElement("span");
+                genreElement.innerText = show.genre;
+
+                var ratingElement = document.createElement("span");
+                ratingElement.innerText ="Rating " + show.rating + "/10";
+
+
+                card.appendChild(imageElement);
+                card.appendChild(document.createElement("br"));
+                card.appendChild(titleElement);
+                card.appendChild(document.createElement("br"));
+                card.appendChild(genreElement);
+                card.appendChild(document.createElement("br"));
+                card.appendChild(ratingElement);
+
+
+                card.addEventListener("click", function () {
+                    localStorage.setItem("showId", show.showId);
+                    window.location.replace("movie");
+                });
+                return card;
+            }
 
 
             document.addEventListener('DOMContentLoaded', function () {
@@ -362,6 +557,7 @@
             function performLogout() {
                 if (isAuthenticated) {
                     localStorage.clear();
+                    sessionStorage.clear();
                     window.location.replace("home");
                     document.getElementById("logout").style.display = "none";
 
@@ -383,7 +579,6 @@
                 window.history.back();
             }
 
-
         </script>
     </head>
 
@@ -394,8 +589,9 @@
             <span style="font-size:20px;cursor:pointer" class="hamburger" onclick="openNav()">&#9776;</span>
             <!-- Search Bar -->
             <form class="form-inline my-2 my-lg-0 mx-auto">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn searchbutton  my-2 my-sm-0" type="submit">Search</button>
+                <input class="form-control mr-sm-2 " id="search-input" type="search" placeholder="Movie Name" aria-label="Search">
+                <i type="button" class="fas fa-search" aria-hidden="true" onclick="searchByName()"></i>
+                <!-- <button class="btn searchbutton  my-2 my-sm-0" type="submit" onclick="searchByName()">Search</button> -->
             </form>
 
             <div class="loginbtn" id="loginButtonContainer">
@@ -408,7 +604,7 @@
                         src="/movie/logo1.png" alt="Logo" height="40"> </i>
                 <div class="overlay-content">
                     <a href="#">About</a>
-                    <a type="button" href="getuserbookings">Bookings</a>
+                    <a type="button" href="userbookings">Bookings</a>
                     <a href="#">Help & Support</a>
                     <a href="#">Contact</a>
                     <a href="#" id="logout" onclick="performLogout()">Logout</a>
@@ -422,6 +618,14 @@
 
 
         <div id="showContainer">
+        </div>
+
+        <div id="showcard">
+            <h3 style="font-weight: bold;">Choose Another Movie</h3>
+            <div id="othermovies">
+
+
+            </div>
         </div>
     </body>
 

@@ -1,8 +1,8 @@
 package com.hashstudioz.moviebooking.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.hashstudioz.moviebooking.entities.classenum.TicketClass;
 
@@ -40,14 +40,19 @@ public class Invoice implements Serializable  {
 	
 	@ManyToOne
     @JoinColumn(name = "show_id")
-	private Show show; // containing object of theater and upcoming show details
+	private Show show; 
     private int totalTickets;
-    
-   
+    private String orderId;
+    private String payment_id;
+    private String payment_status;
 	private double totalPrice; 
-    private LocalDate booked_date;
+    private String booked_date;
     private TicketClass ticketClass;
-    
+    private boolean deleted = Boolean.FALSE;
+
     @ElementCollection
     private List<Integer> bookingSeat;
+    
+    @ElementCollection
+    private List<String> seatNumber;
 }

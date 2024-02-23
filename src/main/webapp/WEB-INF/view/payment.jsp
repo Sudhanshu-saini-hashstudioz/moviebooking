@@ -17,7 +17,7 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <style>
@@ -26,15 +26,29 @@
             }
 
             .navbar {
-                background-color: whitesmoke;
+                background-color: oldlace;
             }
 
+
             .btn {
-                color: black;
-                background-color: #dfdfdf;
+
+                max-width: min-content;
+                align-self: center;
+                border-radius: 15px;
+                background: linear-gradient(145deg, #ffffff, #e3dede);
+                box-shadow: 7px 7px 8px #656363,
+                    -7px -7px 8px #ffffff;
+
+                color: maroon;
+                background-color: lavender;
                 border-radius: 10px;
                 cursor: pointer;
             }
+
+            /* .overlay>body {
+                filter: blur(10px);
+                transform: scale(0.9, 0.9);
+            } */
 
             .overlay {
                 position: fixed;
@@ -42,9 +56,10 @@
                 right: -50%;
                 width: 0%;
                 height: 100%;
-                background-color: whitesmoke;
+                background-color: oldlace;
                 overflow-x: hidden;
-                transition: 0.5s;
+                transition: 0.2s;
+                z-index: 10;
 
             }
 
@@ -72,20 +87,21 @@
                 padding: 8px;
                 text-decoration: none;
                 font-size: 20px;
-                color: #0a0a0a;
+                color: maroon;
                 display: block;
-                transition: 0.3s;
+                transition: 0.1s;
                 border-color: grey;
                 border-block: inherit;
             }
 
             .overlay a:hover,
             .hamburger:hover,
-            .btn:hover,
             .overlay a:focus {
-                color: #f1f1f1;
-                background-color: rgb(235, 84, 84);
+                color: darksalmon;
+                background-color: lavender;
                 border-radius: 10px;
+                transition: transform 0.3s ease-out;
+                transform: scale(1.15);
             }
 
             @media screen and (max-height: 450px) {
@@ -106,6 +122,10 @@
             .logobtn {
                 top: 15px;
                 left: 10px;
+            }
+
+            .btn:hover {
+                color: darksalmon;
             }
 
             .form-control:hover {
@@ -132,7 +152,7 @@
             }
 
             .show-card {
-                background-color: white;
+                background-color: rgb(253, 245, 230);
                 border-radius: 15px;
                 width: 65%;
                 height: fit-content;
@@ -140,8 +160,8 @@
                 padding-top: 20px;
                 padding-bottom: 20px;
                 padding-left: 40px;
-                border: 1px solid #ccc;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                border: 1px solid oldlace;
+                box-shadow: 0 0 5px rgba(253, 245, 230, 0.3);
                 text-align: center;
                 display: inline-flex;
                 justify-content: left;
@@ -149,7 +169,7 @@
             }
 
             .payment-card {
-                background-color: white;
+                background-color: oldlace;
                 border-radius: 15px;
                 width: 32%;
                 margin: 10px;
@@ -158,11 +178,18 @@
                 padding-right: 10px;
                 padding-left: 10px;
                 border: 1px solid #ccc;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 0 5px rgba(253, 245, 230, 0.3);
                 /* text-align: center; */
-                display: inline-flex;
-                justify-content: center;
+                display: flex;
+                justify-content: space-between;
                 flex-direction: column;
+            }
+
+            .payment-card div {
+                padding-right: 5px;
+                display: flex;
+                justify-content: space-between;
+
             }
 
             .forfee,
@@ -182,11 +209,11 @@
             }
 
             .details {
+                display: flex;
+                flex-direction: column;
                 position: relative;
-                align-items: left;
-                justify-items: left;
-                margin-top: 20px;
-                padding-left: 20px;
+                align-items: flex-start;
+                padding-left: 25px;
             }
 
             .ticketbtn {
@@ -195,8 +222,14 @@
                 align-items: baseline;
             }
 
+            .forfee:nth-child(2) {
+                text-align: right;
+                font-size: xx-large;
+            }
+
             .show-card img,
             showcard img {
+                border-radius: 10px;
                 margin-top: 2px;
                 width: fit-content;
                 justify-content: baseline;
@@ -228,22 +261,6 @@
                 bottom: 0px;
             }
 
-            /* .forseat:nth-child(2n),
-            .foramount:nth-child(2n),
-            .forfee:nth-child(2n) {
-                right: 0px;
-            } */
-
-            span:nth-child(2n){
-                text-align: left;
-            }
-
-            /* .forseat:nth-child(2n+1),
-            .foramount:nth-child(2n+1),
-            .forfee:nth-child(2n+1) {
-                text-align: right;
-            } */
-
             .forseat,
             .forfee,
             .foramount {
@@ -265,7 +282,11 @@
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
         <script>
+
+
 
             $(document).ready(function () {
 
@@ -291,6 +312,9 @@
 
             });
 
+
+
+
             function populateCard(show) {
                 var showContainer = document.getElementById("showContainer");
                 showContainer.innerHTML = "";
@@ -300,6 +324,8 @@
                 showContainer.appendChild(paymentCard);
 
             }
+
+
 
             function createShowCard(show) {
                 var card = document.createElement("div");
@@ -323,11 +349,11 @@
 
                 imageElement.alt = "Show Image";
 
-                var titleElement = document.createElement("h4");
+                var titleElement = document.createElement("h2");
                 titleElement.innerText = show.upcomingShows;
 
-                var ratingElement = document.createElement("h6");
-                ratingElement.innerText = " " + show.rating + "/10";
+                var ratingElement = document.createElement("h4");
+                ratingElement.innerText = "  " + show.rating + "/10";
 
                 var ratingIcon = document.createElement("i");
                 ratingIcon.className = "fa fa-star";
@@ -337,17 +363,26 @@
                 ratingContainer.appendChild(document.createTextNode(" "));
                 ratingContainer.appendChild(ratingElement);
 
-                var languageElement = document.createElement("h6");
+                var languageElement = document.createElement("h5");
                 languageElement.innerText = show.language;
 
-                var genreElement = document.createElement("h6");
+                var genreElement = document.createElement("h5");
                 genreElement.innerText = show.genre;
+
+                var theatreElement = document.createElement("h6");
+                theatreElement.innerText = "Screen " + show.screenId + " , " + show.theatre.theatreName + " ,  " + show.theatre.city;
+
+                var timeElement = document.createElement("h6");
+                timeElement.innerText = show.runningTime;
 
                 card1.appendChild(imageElement);
                 card2.appendChild(titleElement);
                 card2.appendChild(ratingContainer);
                 card2.appendChild(languageElement);
                 card2.appendChild(genreElement);
+                card2.appendChild(timeElement);
+                card2.appendChild(theatreElement);
+
 
                 card.appendChild(card1);
                 card.appendChild(card2);
@@ -355,7 +390,10 @@
             }
 
 
+
             // Update createPaymentCard function to include seat numbers, fees, and total payment
+
+            var finalPrice;
             function createPaymentCard(show) {
                 var paymentCard = document.createElement("div");
                 paymentCard.className = "payment-card";
@@ -366,12 +404,11 @@
 
                 // Seat numbers
                 var forseat = document.createElement("div");
+
                 forseat.className = "forseat";
                 var seatNumbers = document.createElement("span");
-                seatNumbers.innerText = "Seat No ." + sessionStorage.getItem("bookedSeat");
+                seatNumbers.innerText = "Seat No ." + sessionStorage.getItem("bookingSeats");
                 forseat.appendChild(seatNumbers);
-
-
                 var basePrice = document.createElement("span");
                 basePrice.innerText = " Rs . " + sessionStorage.getItem("amount");
                 forseat.appendChild(basePrice);
@@ -397,14 +434,14 @@
                 totalPayment.innerText = "Total Payment ";
                 foramount.appendChild(totalPayment);
                 var totalAmount = document.createElement("span");
-                var finalprice = parseFloat(sessionStorage.getItem("amount")) + parseFloat(fee);
+                finalprice = parseFloat(sessionStorage.getItem("amount")) + parseFloat(fee);
                 sessionStorage.setItem("finalprice", finalprice);
                 totalAmount.innerText = " Rs . " + (finalprice);
                 foramount.appendChild(totalAmount);
 
 
                 var confirmBooking = document.createElement("button");
-                confirmBooking.innerText = "Confirm Tickets"
+                confirmBooking.innerText = "Pay Amount " + " Rs . " + (finalprice);
                 confirmBooking.className = "btn confirmticket";
                 confirmBooking.setAttribute("onclick", "getinvoice()");
 
@@ -415,12 +452,20 @@
 
                 paymentCard.appendChild(forfee);
 
+                paymentCard.appendChild(document.createElement("hr"));
+
                 paymentCard.appendChild(foramount);
 
                 paymentCard.appendChild(confirmBooking);
 
                 return paymentCard;
             }
+
+
+
+
+            //============================================= invoicing =================================================
+
 
             function getinvoice() {
 
@@ -429,33 +474,145 @@
                 token = localStorage.getItem("token");
 
                 const selectedSeats = arrayToList(sessionStorage.getItem("bookedSeat"));
+                const isSelectedSeats = arrayToList(sessionStorage.getItem("isSelectedSeats"));
 
-                localStorage.setItem("booking", selectedSeats);
+                var seatNumberString = sessionStorage.getItem("bookingSeats");
+                var seatNumberArray = seatNumberString.split(',');
+                var seatNumber = seatNumberArray.map(String);
+
+                var data = {
+                    show: {
+                        showId: showId
+                    },
+                    totalTickets: selectedSeats.length,
+                    bookingSeat: selectedSeats,
+                    amount: sessionStorage.getItem("finalprice"),
+                    seatNumber: seatNumber,
+                    pendingSeats: isSelectedSeats
+                }
 
                 var headers = {
                     "Authorization": "Bearer " + token,
                 };
                 $.ajax({
-                    url: "http://localhost:1212/api/v1/user/getinvoice",
+                    url: "http://localhost:1212/api/v1/user/getOrderDetails",
                     type: "POST",
                     headers: headers,
                     contentType: 'application/json; charset=utf-8',
-                    data: JSON.stringify({
-                        show: {
-                            showId: showId
-                        },
-                        totalTickets: selectedSeats.length,
-                        bookingSeat: selectedSeats,
-                        amount: sessionStorage.getItem("finalprice")
-                    }),
+                    data: JSON.stringify(data),
                     async: false,
+
+
                     success: function (response) {
-                        var invoice = JSON.parse(JSON.stringify(response));
-                        localStorage.setItem("invoice", invoice);
-                        window.location.replace("http://localhost:1212/movie/movie");
+
+                        var orderdetails = JSON.parse(JSON.stringify(response));
+                        var orderId = orderdetails.id;
+
+                        var invoiceId = getInvoice(data, orderId);
+
+                        let option = {
+                            key: "rzp_test_2ZbY5hDyVZAQVh",
+                            amount: orderdetails.amount,
+                            currency: "INR",
+                            order_id: orderId,
+                            name: sessionStorage.getItem("showName"),
+                            description: seatNumber + "",
+                            image: "http://localhost:1212/movie/logo1.png",
+
+                            handler: function (response) {
+                                confirmPayment();
+
+                            },
+
+                            prefill: {
+                                name: "",
+                                email: response.email,
+                                contact: ""
+                            },
+                            notes: {
+                                address: "Razorpay Corporate Office"
+                            },
+                            theme: {
+                                color: "#3399cc"
+                            }
+                        };
+
+                        let rzp = new Razorpay(option);
+                        rzp.on('payment.failed', function (response) {
+
+                            console.log(response);
+                            var headers = {
+                                "Authorization": "Bearer " + localStorage.getItem("token")
+                            }
+
+                            $.ajax({
+                                url: "http://localhost:1212/api/v1/user/paymentfailed?id=" + sessionStorage.getItem("invoiceId"),
+                                type: "PUT",
+                                headers: headers,
+                                contentType: 'application/json; charset=utf-8',
+                                async: false,
+                                success: function (response) {
+                                    window.location.href = "movie";
+                                },
+                                error: function (e) {
+                                    window.location.reload();
+                                }
+
+                            })
+                           
+                        });
+
+                        rzp.open();
+
                     },
                     error: function (e) {
-                        window.location.replace("http://localhost:1212/movie/loginpage");
+                        console.log(e);
+                        window.location.href = "seat";
+                    }
+                });
+
+            }
+
+            function getInvoice(data, orderId) {
+                token = localStorage.getItem("token");
+                var headers = {
+                    "Authorization": "Bearer " + token,
+                };
+                $.ajax({
+                    url: "http://localhost:1212/api/v1/user/getInvoice?orderId=" + orderId,
+                    type: "POST",
+                    headers: headers,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    async: false,
+                    success: function (response) {
+                        sessionStorage.setItem("invoiceId", response);
+                    },
+                    error: function (e) {
+                        window.location.reload();
+                    }
+                });
+            }
+
+            function confirmPayment() {
+
+                var invoice = sessionStorage.getItem("invoiceId");
+                var token = localStorage.getItem("token");
+                var headers = {
+                    "Authorization": "Bearer " + token,
+                };
+
+                $.ajax({
+                    url: "http://localhost:1212/api/v1/user/confirm-payment?invoiceId=" + invoice,
+                    type: "POST",
+                    headers: headers,
+                    contentType: 'application/json; charset=utf-8',
+                    async: false,
+                    success: function (response) {
+                        window.location.href = "userbookings";
+                    },
+                    error: function (e) {
+                        console.log("Something Went Wrong:", e);
                     }
                 });
 
@@ -471,9 +628,6 @@
                 }
             }
 
-
-
-
             //byte array to a base64-encoded string
             function arrayBufferToBase64(buffer) {
                 var binary = '';
@@ -484,22 +638,6 @@
                 }
                 return btoa(binary);
             }
-
-
-            function seat() {
-                var numberOfTickets = prompt("Enter the number of tickets:");
-
-                if (numberOfTickets !== null && !isNaN(numberOfTickets) && numberOfTickets > 0) {
-                    localStorage.setItem("numberOfTickets", numberOfTickets);
-                    window.location.href = "http://localhost:1212/movie/getseat";
-                } else {
-                    alert("Invalid input. Please enter a valid number of tickets.");
-                }
-            }
-
-
-
-
 
             document.addEventListener('DOMContentLoaded', function () {
                 toggleLoginLogout();
@@ -523,6 +661,7 @@
             function performLogout() {
                 if (isAuthenticated) {
                     localStorage.clear();
+                    sessionStorage.clear();
                     window.location.replace("home");
                     document.getElementById("logout").style.display = "none";
 
@@ -547,7 +686,7 @@
         </script>
     </head>
 
-    <body>
+    <body id="body">
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light ">
             <a class="navbar-brand" href="home"> <img src="/movie/logo1.png" alt="Logo" height="40"> </a>
@@ -568,7 +707,7 @@
                         src="/movie/logo1.png" alt="Logo" height="40"> </i>
                 <div class="overlay-content">
                     <a href="#">About</a>
-                    <a type="button" href="getuserbookings">Bookings</a>
+                    <a type="button" href="userbookings">Bookings</a>
                     <a href="#">Help & Support</a>
                     <a href="#">Contact</a>
                     <a href="#" id="logout" onclick="performLogout()">Logout</a>

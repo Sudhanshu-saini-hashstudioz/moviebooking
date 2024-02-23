@@ -47,6 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		
 		User user = userRepo.findByEmail(signUpRequest.getEmail()).get();
 		user.setModifiedDate(java.time.LocalDate.now().toString());
+		user.setDeleted(false);
 		return user;
 	}
 
@@ -55,7 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	public JwtAuthenticationResponse signIn(SignInRequest signInRequest) {
 		
 		User user = userRepo.findByEmail(signInRequest.getEmail())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid Email or Password !!"));
+				.orElseThrow(() -> new IllegalArgumentException("Enter Valid Email or Password !!"));
 		
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword()));
@@ -65,7 +66,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			   if(Status.ACTIVE.equals(user.getStatus())) {
 					var jwt = jwtService.generateToken(user);
 					var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
-					System.out.println(jwt);
 					jwtAuthenticationResponse.setToken(jwt);
 					jwtAuthenticationResponse.setRefreshToken(refreshToken);
 					return jwtAuthenticationResponse;	

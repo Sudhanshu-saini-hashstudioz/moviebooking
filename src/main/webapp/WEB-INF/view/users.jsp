@@ -10,6 +10,7 @@
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
                 integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
                 crossorigin="anonymous">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
             <title> User Data </title>
 
@@ -60,9 +61,10 @@
 
                         // Create and configure the status select element
                         var statusSelect = $('<select>');
-                            var actionColumn = $("<td>");
+                        var actionColumn = $("<td>");
                         if (user.role !== 'ADMIN') {
                             actionColumn.append('<a onclick="return confirmDelete(\'' + user.email + '\' , \'' + user.name + '\' , \'' + user.role + '\')"><button type="button" class="btn">Delete</button></a>');
+                            // actionColumn.append('<i onclick="return confirmDelete(\''+ user.email + '\' , \'' + user.name + '\' , \'' + user.role + '\')" class="fa-solid fa-user-minus" type="button" aria-hidden="true"></i>');
                             for (var i = 0; i < statusOptions.length; i++) {
                                 var option = $('<option>').text(statusOptions[i]);
                                 statusSelect.append(option);
@@ -80,10 +82,11 @@
                         });
 
                         row.append($('<td>').append(statusSelect));
-
-                       
-                        
-                        actionColumn.append('<a onclick="return confirmUpdate(\'' + user.id + '\' , \'' + + '\')"><button type="button" class="btn">Update</button></a>');
+                        if (!user.deleted) {
+                            actionColumn.append('<a onclick="return confirmUpdate(\'' + user.id + '\' , \'' + + '\')"><button type="button" class="btn">Update</button></a>');
+                        } else {
+                            actionColumn.append($('<td>').text("Not Available"));
+                        }
 
                         row.append(actionColumn);
                         tableBody.append(row);
@@ -92,44 +95,79 @@
 
 
                 function search() {
+
                     var email = $(".email-field").val();
-                    var token = localStorage.getItem("token");
-                    var headers = {
-                        "Authorization": "Bearer " + token,
-                    };
-                    $.ajax({
-                        url: "http://localhost:1212/api/v1/admin/getuser",
-                        type: "GET",
-                        headers: headers,
-                        contentType: 'application/json; charset=utf-8',
-                        data: {
-                            email: email
-                        },
-                        async: false,
-                        success: function (user) {
-                            var tableBody = $("table tbody");
-                            tableBody.empty();
-                            var row = $('<tr>');
-                            row.append($('<td>').text(user.id));
-                            row.append($('<td>').text(user.name));
-                            row.append($('<td>').text(user.email));
-                            row.append($('<td>').text(user.role));
-                            row.append($('<td>').text(user.createdDate));
-                            row.append($('<td>').text(user.modifiedDate));
-                            row.append($('<td>').text(user.status));
-                            var actionColumn = $("<td>");
-                            actionColumn.append('<a onclick="return confirmDelete(\'' + user.email + '\' , \'' + user.name + '\' , \'' + user.role + '\')"><button type="button" class="btn">Delete</button></a>');
-                            actionColumn.append('<a onclick="return confirmUpdate(\'' + user.id + '\' , \'' + + '\')" ><button type="button" class="btn">Update</button></a>');
-                            row.append(actionColumn);
-                            tableBody.append(row);
 
-                        },
-                        error: function (e) {
-                            alert("User Not Found");
-                        }
-                    });
+                    if (email != "") {
+
+                        var token = localStorage.getItem("token");
+                        var headers = {
+                            "Authorization": "Bearer " + token,
+                        };
+                        $.ajax({
+                            url: "http://localhost:1212/api/v1/admin/getuser",
+                            type: "GET",
+                            headers: headers,
+                            contentType: 'application/json; charset=utf-8',
+                            data: {
+                                email: email
+                            },
+                            async: false,
+                            success: function (user) {
+                                // var users = JSON.parse(JSON.stringify(response));
+                                // populateUsersTable(users);
+                                var statusOptions = ['DEACTIVATE', 'ACTIVE'];
+                                var tableBody = $("table tbody");
+                                tableBody.empty();
+                                var row = $('<tr>');
+                                row.append($('<th>').text(user.id));
+                                row.append($('<td>').text(user.name));
+                                row.append($('<td>').text(user.email));
+                                row.append($('<td>').text(user.role));
+                                row.append($('<td>').text(user.createdDate));
+                                row.append($('<td>').text(user.modifiedDate));
 
 
+                                // Create and configure the status select element
+                                var statusSelect = $('<select>');
+                                var actionColumn = $("<td>");
+                                if (user.role !== 'ADMIN') {
+                                    // actionColumn.append('<a onclick="return confirmDelete(\'' + user.email + '\' , \'' + user.name + '\' , \'' + user.role + '\')"><button type="button" class="btn">Delete</button></a>');
+                                    actionColumn.append('<i onclick="return confirmDelete(\''+ user.email + '\' , \'' + user.name + '\' , \'' + user.role + '\')" class="fa-solid fa-trash" type="button" aria-hidden="true"></i>');
+                                    for (var i = 0; i < statusOptions.length; i++) {
+                                        var option = $('<option>').text(statusOptions[i]);
+                                        statusSelect.append(option);
+                                    }
+                                } else {
+                                    statusSelect.prop('disabled', true); // Disable select for ADMIN
+                                }
+
+                                // Set the selected option 
+                                statusSelect.val(user.status);
+
+                                statusSelect.on('change', function () {
+                                    var newStatus = $(this).val(); // Get the selected status
+                                    updateUser(user.id, newStatus); // Call the update method
+                                });
+
+                                row.append($('<td>').append(statusSelect));
+                                var actionColumn = $("<td>");
+
+                                if (!user.deleted) {
+                                    actionColumn.append('<a onclick="return confirmUpdate(\'' + user.id + '\' , \'' + + '\')"><button type="button" class="btn">Update</button></a>');
+                                } else {
+                                    actionColumn.append($('<td>').text("Not Available"));
+                                }
+                                row.append(actionColumn);
+                                tableBody.append(row);
+
+                            },
+                            error: function (e) {
+                                alert("User Not Found");
+                            }
+                        });
+
+                    }
                 }
 
                 function searchByName() {
@@ -157,7 +195,7 @@
 
                         },
                         error: function (e) {
-
+                            window.reload();
                         }
                     });
                 }
@@ -190,8 +228,6 @@
 
                             window.location.reload();
 
-                            alert("User Updated.")
-
                         },
                         error: function (e) {
                             alert("Something Went Wrong:");
@@ -203,7 +239,7 @@
                 }
 
                 function confirmDelete(email, name, role) {
-                    var confirmationMessage = "Are you sure you want to Delete the data?";
+                    var confirmationMessage = "Are you sure you want to Delete the data? \n";
                     confirmationMessage += "Name : " + name + "\n";
                     confirmationMessage += "Email : " + email + "\n";
                     confirmationMessage += "Role : " + role + "\n";
@@ -236,7 +272,6 @@
                         async: false,
                         success: function (response) {
                             window.location.reload();
-                            alert("User Deleted Sucessfully.")
 
                         },
                         error: function (e) {
@@ -249,30 +284,15 @@
 
 
 
-                var isAuthenticated;
+                var isAuthenticated = true;
 
                 function toggleLoginLogout() {
                     var token = localStorage.getItem('token');
-
-                    if (token) {
-                        document.getElementById("loginButton").style.display = "none";
-                        loginButton.innerText = "Logout";
-                        isAuthenticated = true;
-
-                    } else {
-                        isAuthenticated = false;
-
-                    }
-                }
-
-
-
-
-                function performLogout() {
                     if (isAuthenticated) {
                         localStorage.clear();
-                        document.getElementById("logoutButton").style.display = "none";
+                        sessionStorage.clear();
                         window.location.href = "home";
+                        document.getElementById("logout").style.display = "none";
 
                     } else {
                         window.location.href = "loginpage";
@@ -280,6 +300,17 @@
                 }
 
 
+                function performLogout() {
+                    if (isAuthenticated) {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        document.getElementById("logoutButton").style.display = "none";
+                        window.location.href = "home";
+
+                    } else {
+                        window.location.href = "loginpage";
+                    }
+                }
 
                 //navigation bar
                 function openNav() {
@@ -313,7 +344,7 @@
                     height: 100%;
                     background-color: whitesmoke;
                     overflow-x: hidden;
-                    transition: 0.5s;
+                    transition: 0.2s;
                     backface-visibility: hidden;
                     z-index: 2;
 
@@ -332,12 +363,8 @@
                 }
 
                 .btn {
-
-                    margin-left: 5px;
-                    margin-right: 5px;
-
-                    color: black;
-                    background-color: #dfdfdf;
+                    color: white;
+                    background-color: rgb(235, 84, 84);
                     border-radius: 10px;
                 }
 
@@ -356,14 +383,14 @@
                     font-size: 20px;
                     color: #0a0a0a;
                     display: block;
-                    transition: 0.3s;
+                    transition: 0.2s;
                     border-color: grey;
                     border-block: inherit;
                 }
 
                 .overlay a:hover,
                 .hamburger:hover,
-                .btn:hover,
+
                 .overlay a:focus {
                     color: #f1f1f1;
                     background-color: rgb(235, 84, 84);
@@ -383,14 +410,47 @@
                 }
 
                 .search {
-                    margin-left: 64%;
+                    margin-left: 75%;
                     margin-bottom: 5px;
-                    display: inline-flex;
-                    justify-content: center;
+                    display:inline-flex;
                     flex-direction: row;
                 }
 
                 .table {
+                    align-items: center;
+                    overflow-y: auto;
+                    height: 400px;
+                }
+
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+
+                tbody {
+                    overflow-y: auto;
+                }
+
+                td,
+                th {
+                    width: auto;
+                   
+                    text-align: center;
+                    padding: 8px;
+                }
+
+                tr,
+                th {
+                    margin: 6px;
+                }
+
+                tr:nth-child(even) {
+                    background-color: rgb(221, 221, 221);
+                }
+
+
+                /* .table {
                     align-items: center;
                     overflow-y: auto;
                     height: 400px;
@@ -408,7 +468,7 @@
 
                 th {
                     background: #eee;
-                }
+                } */
             </style>
         </head>
 
@@ -424,9 +484,9 @@
 
                 <!-- Search Bar -->
                 <form class="form-inline my-2 my-lg-0 mx-auto">
-                    <input class="form-control mr-sm-2" id="search-input" type="search" placeholder="Name"
+                    <input class="form-control mr-sm-2" id="search-input" type="search" placeholder="User Name"
                         aria-label="Search">
-                    <button class="btn searchbutton  my-2 my-sm-0" type="button"
+                    <button class="btn searchbutton  my-2 my-sm-0" type="button" style="margin-left: 5px;"
                         onclick="searchByName()">Search</button>
                 </form>
 
@@ -437,15 +497,15 @@
                     <div class="overlay-content">
                         <a type="button" href="#" onclick="handleLinkClick(event)">About</a>
                         <a type="button" href="users" onclick="handleLinkClick(event)">Users</a>
-                        <a type="button" href="theaters" onclick="handleLinkClick(event)">Theater</a>
+                        <a type="button" href="theatres" onclick="handleLinkClick(event)">Theatres</a>
                         <a type="button" href="shows" onclick="handleLinkClick(event)">Shows</a>
                         <a type="button" href="bookings" onclick="handleLinkClick(event)">Bookings</a>
-                        <a type="button" id="logoutButton" onclick="performLogout()">Logout</a>
+                        <a type="button" href="#" id="logoutButton" onclick="performLogout()">Logout</a>
 
                     </div>
                 </div>
                 <!-- <span style="font-size:30px;cursor:pointer" class="hamburger" onclick="openNav()">&#9776;</span> -->
-                <i onclick="" id="btn" class="fa fa-user fa-2x" aria-hidden="true"></i>
+                <button onclick="goBack()" class="btn backbtn">Back</button>
             </nav>
 
             <div class="container mt-3">
@@ -454,12 +514,13 @@
 
                     <div class="col-md-12">
 
+
+
                         <h3 class="text-center mb-3"> Registered Users </h3>
-                        <button onclick="goBack()" class="btn backbtn">Back</button>
                         <div class="search">
                             <input type="test" class="form-control email-field" id="email" name="email"
-                                placeholder="email">
-                            <button class="btn searchbutton  my-2 my-sm-0" type="button"
+                                placeholder="User Email">
+                            <button class="btn searchbutton  my-2 my-sm-0" type="button" style="margin-left: 5px;"
                                 onclick="search()">Search</button>
                         </div>
 

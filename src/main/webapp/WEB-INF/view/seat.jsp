@@ -27,8 +27,8 @@
 
             .navbar {
                 display: flex;
-                flex:auto;
-                background-color: whitesmoke;
+                flex: auto;
+                background-color: oldlace;
             }
 
             .overlay {
@@ -37,9 +37,9 @@
                 right: -50%;
                 width: 0%;
                 height: 100%;
-                background-color: whitesmoke;
+                background-color: oldlace;
                 overflow-x: hidden;
-                transition: 0.5s;
+                transition: 0.2s;
 
             }
 
@@ -67,20 +67,21 @@
                 padding: 8px;
                 text-decoration: none;
                 font-size: 20px;
-                color: #0a0a0a;
+                color: maroon;
                 display: block;
-                transition: 0.3s;
+                transition: 0.1s;
                 border-color: grey;
                 border-block: inherit;
             }
 
             .overlay a:hover,
             .hamburger:hover,
-            .btn:hover,
             .overlay a:focus {
-                color: #f1f1f1;
-                background-color: rgb(235, 84, 84);
+                color: darksalmon;
+                background-color: lavender;
                 border-radius: 10px;
+                transition: transform 0.3s ease-out;
+                transform: scale(1.15);
             }
 
             @media screen and (max-height: 450px) {
@@ -112,14 +113,24 @@
 
             .btn,
             #btn {
-                color: black;
+
+                border-radius: 15px;
+                background: linear-gradient(145deg, #ffffff, #e3dede);
+                box-shadow: 7px 7px 8px #656363,
+                    -7px -7px 8px #ffffff;
+                
+                color: maroon;
 
                 cursor: pointer;
             }
 
             .btn {
-                background-color: #dfdfdf;
+                background-color: lavender;
                 border-radius: 10px;
+            }
+
+            .btn:hover {
+                color: darksalmon;
             }
 
             .center {
@@ -135,7 +146,7 @@
 
             .tickets {
                 width: fit-content;
-                height: fit-content;
+                height: min-content;
                 border: 0.4mm solid rgba(0, 0, 0, 0.08);
                 border-radius: 3mm;
                 box-sizing: border-box;
@@ -175,12 +186,17 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                flex-direction: column;
+                flex-direction: column-reverse;
                 min-height: 150px;
                 position: relative;
             }
 
+            .seat-management {
+                display: contents;
+            }
+
             .status {
+                padding: 10px;
                 width: 100%;
                 display: flex;
                 align-items: center;
@@ -192,6 +208,7 @@
                 position: absolute;
                 bottom: 0;
                 left: 50%;
+                margin-top: 10px;
                 transform: translate(-50%, 0);
                 width: 220px;
                 height: 7px;
@@ -230,10 +247,11 @@
 
             .all-seats {
                 display: grid;
-                grid-template-columns: repeat(10, 1fr);
+                grid-template-columns: repeat(15, 1fr);
                 grid-gap: 15px;
-                margin: 60px 0;
-                margin-top: 20px;
+                /* margin: 60px 0; */
+                padding: 2px;
+                /* margin-top: 20px; */
                 position: relative;
             }
 
@@ -295,7 +313,8 @@
                 border: none;
                 cursor: pointer;
             }
-            .backbtn{
+
+            .backbtn {
                 right: 0px;
             }
 
@@ -311,6 +330,12 @@
             #profilebtn {
                 cursor: pointer;
             }
+
+            label {
+
+                font-size: 10px;
+                text-align: center;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -319,7 +344,7 @@
 
             $(document).ready(function () {
                 $.ajax({
-                    url: "http://localhost:1212/api/v1/auth/availableseat",
+                    url: "http://localhost:1212/api/v1/auth/getshowbyid",
                     type: "GET",
                     contentType: 'application/json; charset=utf-8',
                     data: {
@@ -327,8 +352,8 @@
                     },
                     async: false,
                     success: function (response) {
-                        var seats = JSON.parse(JSON.stringify(response));
-                        populateSeat(seats);
+                        var show = JSON.parse(JSON.stringify(response));
+                        populateSeat(show.bookedSeat, show.pendingSeats, show);
                     },
                     error: function (e) {
                         window.location.replace("http://localhost:1212/movie/home");
@@ -339,76 +364,141 @@
 
             var selectedSeats = [];
             var bookedSeats = [];
+            var bookingSeats = [];
+            var isSelectedSeats = [];
+            var k = 1;
+            var char = 'E';
+            function populateSeat(seats, pendingSeats, show) {
+                var executive = 75;
+                var lounge = 30;
+                var classic = show.capacity - (executive + lounge);
+                pupulateSeats(show, seats, pendingSeats, classic);
+                pupulateSeats(show, seats, pendingSeats, executive);
+                pupulateSeats(show, seats, pendingSeats, lounge);
+            }
 
-            function populateSeat(seats) {
-                var find = document.getElementById("seats");
 
-                for (var i = localStorage.getItem("capacity"); i > 0; i--) {
+            function pupulateSeats(show, seats, pendingSeats, totalSeat) {
+
+                var price;
+                var j = 1;
+                var classId = "";
+                if (totalSeat == 30) {
+                    classId = "LOUNGE";
+                    price = show.lounge;
+                } else if (totalSeat == 75) {
+                    classId = "EXECUTIVE";
+                    price = show.executive;
+                } else {
+                    price = show.classic;
+                    classId = "CLASSIC";
+                }
+
+                var forSeatManagement = document.getElementById("seat-manager");
+                var find = document.createElement("div");
+                find.className = "all-seats";
+                find.setAttribute("id", classId);
+
+                var forClassElement = document.createElement("h6");
+                forClassElement.innerText = classId + "-Rs. " + price + ".";
+
+
+                for (var i = 1; i <= totalSeat; i++) {
+
+                    if (j > 15) {
+                        j = 1;
+                    }
+
                     var input = document.createElement("input");
                     input.setAttribute("type", "checkbox");
                     input.setAttribute("name", "tickets");
-                    input.setAttribute("id", "s" + i);
+                    input.setAttribute("id", "s" + k);
+                    input.setAttribute("bookingSeatNumber", char + j);
 
-                    input.addEventListener("change", function (event) {
-                        var seatNumber = parseInt(event.target.id.substring(1));
-                        updateSeatStatus(seatNumber, event.target.checked);
-                    });
+                    input.className = "available";
 
+                    if (input.className === "available") {
+
+                        input.addEventListener("change", function (event) {
+                            var seatNumber = parseInt(event.target.id.substring(1));
+                            var bookingSeatNumber = document.getElementById(event.target.id).getAttribute("bookingSeatNumber");
+                            if (selectedSeats.length < 10) {
+                                updateSeatStatus(bookingSeatNumber, seatNumber, event.target.checked, price);
+                            } else {
+                                input.disabled = true;
+                                alert("You Can Select Upto 10 Seats.")
+
+                            }
+
+                        });
+
+                    } else {
+                        input.disabled = true;
+                    }
                     var label = document.createElement("label");
-                    label.setAttribute("for", "s" + i);
+                    label.setAttribute("for", "s" + k);
 
-                    if (!seats.includes(i)) {
-                        bookedSeats.push(i);
+                    if (j == 15) {
+                        char = String.fromCharCode(char.charCodeAt(0) + 1);
+                    }
+
+                    label.innerText = j;
+                    j += 1;
+
+                    if (seats.includes(k) || pendingSeats.includes(k)) {
+                        // bookedSeats.push(k);
                         label.className = "seat booked";
                         input.disabled = true; // Disable the checkbox for booked seats
                     } else {
                         label.className = "seat available";
                     }
+                    k += 1;
                     find.appendChild(input);
                     find.appendChild(label);
+                    forSeatManagement.appendChild(find);
+                    forSeatManagement.appendChild(forClassElement);
 
                 }
             }
 
-            function updateSeatStatus(seatNumber, isChecked) {
+            function updateSeatStatus(bookingSeatNumber, seatNumber, isChecked, price) {
                 var seatLabel = document.getElementById("s" + seatNumber);
 
                 if (!bookedSeats.includes(seatNumber)) {
                     if (isChecked) {
-                        seatLabel.classList.remove("available");
-                        seatLabel.classList.add("selected");
-                        selectedSeats.push(seatNumber);
+                        if (selectedSeats.length < 10) {
+                            seatLabel.classList.remove("available");
+                            seatLabel.classList.add("selected");
+                            selectedSeats.push(seatNumber);
+                            bookingSeats.push(bookingSeatNumber);
+                            isSelectedSeats.push(seatNumber);
+
+                        } else {
+                            selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
+                            seatLabel.checked = false;
+                        }
+
                     } else {
                         seatLabel.classList.remove("selected");
                         seatLabel.classList.add("available");
+                        isSelectedSeats = isSelectedSeats.filter(seat => seat !== seatNumber);
                         selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
+                        bookingSeats = bookingSeats.filter(seat => seat !== bookingSeatNumber);
+
                     }
-                    updateTotal(seatNumber, isChecked);
+                    updateTotal(seatNumber, isChecked, price);
                 } else {
-                    // Reset the checkbox state if the seat is booked
+
                     seatLabel.checked = false;
                 }
             }
 
             var amount = 0;
-            function updateTotal(seatNumber, isChecked) {
+            function updateTotal(seatNumber, isChecked, price) {
                 if (isChecked) {
-                    if (seatNumber <= 80) {
-                        amount += 250;
-                    } else if (seatNumber > 80 && seatNumber <= 120) {
-                        amount += 350;
-                    } else {
-                        amount += 500;
-                    }
+                    amount += price;
                 } else {
-                    if (seatNumber <= 80) {
-                        amount -= 250;
-                    } else if (seatNumber > 80 && seatNumber <= 120) {
-                        amount -= 350;
-                    } else {
-                        amount -= 500;
-                    }
-
+                    amount -= price;
                 }
 
                 var countElement = document.querySelector(".count");
@@ -419,45 +509,35 @@
 
             function getinvoice() {
                 selectedSeats.sort();
+                bookingSeats.sort();
+                isSelectedSeats.sort();
+                sessionStorage.setItem("isSelectedSeats", isSelectedSeats);
                 sessionStorage.setItem("bookedSeat", selectedSeats);
+                sessionStorage.setItem("bookingSeats", bookingSeats);
                 sessionStorage.setItem("amount", amount);
                 if (selectedSeats.length > 0) {
+
+                    // const isSelectedSeats = arrayToList(isSelectedSeats);
+                    // $.ajax({
+                    //     url: "http://localhost:1212/api/v1/auth/setpendingseats?id="+localStorage.getItem("showId"),
+                    //     type: "POST",
+                    //     contentType: 'application/json; charset=utf-8',
+                    //     data: {
+                    //         pendingSeats :isSelectedSeats
+                    //     },
+                    //     async: false,
+                    //     success: function (response) {       
+                    //     },
+                    //     error: function (e) {
+                    //         window.location.replace("http://localhost:1212/movie/home");
+                    //     }
+                    // });
+
                     window.location.replace("http://localhost:1212/movie/payment");
+
                 } else {
                     alert("Please select Atleast one Seat .")
                 }
-
-
-                // var showId = localStorage.getItem("showId");
-                // token = localStorage.getItem("token");
-                // var headers = {
-                //     "Authorization": "Bearer " + token,
-                // };
-                // $.ajax({
-                //     url: "http://localhost:1212/api/v1/user/getinvoice",
-                //     type: "POST",
-                //     headers:headers,
-                //     contentType: 'application/json; charset=utf-8',
-                //     data: JSON.stringify({
-                //         show:{
-                //             showId:showId
-                //         },
-                //         totalTickets:selectedSeats.length,
-                //         bookingSeat :selectedSeats,
-                //         amount:amount
-                //     }),
-                //     async: false,
-                //     success: function (response) {
-                //         var invoice = JSON.parse(JSON.stringify(response));
-                //         localStorage.setItem("invoice", invoice);
-                //         window.location.replace("http://localhost:1212/movie/movie");
-                //     },
-                //     error: function (e) {
-                //         window.location.replace("http://localhost:1212/movie/loginpage");
-                //     }
-                // });
-
-
             }
 
 
@@ -484,6 +564,7 @@
             function performLogout() {
                 if (isAuthenticated) {
                     localStorage.clear();
+                    sessionStorage.clear();
                     window.location.reload();
                     document.getElementById("logout").style.display = "none";
 
@@ -508,7 +589,7 @@
         </script>
     </head>
 
-    <body>
+    <body style="background-color: whitesmoke;">
 
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-light ">
@@ -518,8 +599,10 @@
 
             <!-- Search Bar -->
             <form display="none" class="form-inline my-2 my-lg-0 mx-auto">
-                <input class="form-control mr-sm-2 search-input" type="search" display="none" placeholder="Search" aria-label="Search">
-                <button class="btn searchbutton  my-2 my-sm-0" type="button" display="none" onclick="searchByName()">Search</button>
+                <input class="form-control mr-sm-2 search-input" type="search" display="none" placeholder="Search"
+                    aria-label="Search">
+                <button class="btn searchbutton  my-2 my-sm-0" type="button" display="none"
+                    onclick="searchByName()">Search</button>
             </form>
 
             <div class="loginbtn" id="loginButtonContainer">
@@ -533,7 +616,7 @@
                         src="/movie/logo1.png" alt="Logo" height="40"> </i>
                 <div class="overlay-content">
                     <a href="#">About</a>
-                    <a type="button" href="getuserbookings">Bookings</a>
+                    <a type="button" href="userbookings">Bookings</a>
                     <a href="#">Help & Support</a>
                     <a href="#">Contact</a>
                     <a href="#" id="logout" onclick="performLogout()">Logout</a>
@@ -549,7 +632,7 @@
             <div class="tickets">
                 <div class="ticket-selector">
                     <div class="head">
-                        <div class="title">Movie Name</div>
+                        <div class="title">Select Your Seat</div>
                     </div>
                     <div class="seats">
                         <div class="status">
@@ -557,7 +640,8 @@
                             <div class="item">Booked</div>
                             <div class="item">Selected</div>
                         </div>
-                        <div class="all-seats" id="seats"> </div>
+                        <div class="seat-management" id="seat-manager">
+                        </div>
                     </div>
                 </div>
                 <div class="price">
